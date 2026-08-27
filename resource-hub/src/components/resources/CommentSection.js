@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useResources } from '../../context/ResourceContext';
+import { useAuth } from '../../context/AuthContext';
 import { Rating } from '../common/Rating';
 import { Input, Textarea } from '../common/Input';
 import { Button } from '../common/Button';
@@ -10,12 +11,19 @@ import { MessageSquare, Star, Send, User, CheckCircle2 } from 'lucide-react';
 
 export function CommentSection({ resource }) {
   const { addComment } = useResources();
+  const { user } = useAuth();
 
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState(user ? `${user.name} (${user.role === 'Faculty' ? 'Faculty' : `ECE Sem ${user.semester || 4}`})` : '');
   const [commentText, setCommentText] = useState('');
   const [ratingValue, setRatingValue] = useState(5);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user && !userName) {
+      setUserName(`${user.name} (${user.role === 'Faculty' ? 'Faculty' : `ECE Sem ${user.semester || 4}`})`);
+    }
+  }, [user]);
 
   const comments = resource.comments || [];
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ResourceProvider } from './context/ResourceContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
 import { ToastContainer } from './components/common/Toast';
@@ -17,6 +18,7 @@ import { ResourceDetailPage } from './pages/ResourceDetailPage';
 import { BookmarksPage } from './pages/BookmarksPage';
 import { ImportantLinksPage } from './pages/ImportantLinksPage';
 import { AddResourcePage } from './pages/AddResourcePage';
+import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Scroll to top on route change helper
@@ -52,6 +54,8 @@ function MainLayout() {
           <Route path="/links" element={<ImportantLinksPage />} />
           <Route path="/tools" element={<ImportantLinksPage />} />
           <Route path="/add-resource" element={<AddResourcePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<LoginPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
@@ -74,11 +78,13 @@ function MainLayout() {
 export function App() {
   return (
     <ThemeProvider>
-      <ResourceProvider>
-        <Router>
-          <MainLayout />
-        </Router>
-      </ResourceProvider>
+      <AuthProvider>
+        <ResourceProvider>
+          <Router>
+            <MainLayout />
+          </Router>
+        </ResourceProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

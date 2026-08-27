@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useResources } from '../../context/ResourceContext';
+import { useAuth } from '../../context/AuthContext';
 import { CATEGORIES, FORMATS } from '../../data/initialData';
 import { Modal } from '../common/Modal';
 import { Input, Textarea } from '../common/Input';
@@ -10,21 +11,31 @@ import { UploadCloud, Check, PlusCircle, AlertCircle } from 'lucide-react';
 
 export function ResourceFormModal({ isOpen, onClose }) {
   const { subjects, addResource } = useResources();
+  const { user } = useAuth();
 
   const initialFormData = {
     title: '',
     subjectId: subjects[0]?.id || '',
-    semester: '3',
+    semester: user?.semester ? String(user.semester) : '3',
     category: 'Notes',
     format: 'PDF',
     size: '5.0 MB',
-    author: '',
+    author: user ? `${user.name} (${user.role === 'Faculty' ? 'Faculty' : `ECE Sem ${user.semester || 4}`})` : '',
     url: '',
     description: '',
     tagsInput: '',
   };
 
   const [formData, setFormData] = useState(initialFormData);
+
+  useEffect(() => {
+    if (user && !formData.author) {
+      setFormData((prev) => ({
+        ...prev,
+        author: `${user.name} (${user.role === 'Faculty' ? 'Faculty' : `ECE Sem ${user.semester || 4}`})`,
+      }));
+    }
+  }, [user]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 

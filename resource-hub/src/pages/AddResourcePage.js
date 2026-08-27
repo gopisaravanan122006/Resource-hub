@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResources } from '../context/ResourceContext';
+import { useAuth } from '../context/AuthContext';
 import { CATEGORIES, FORMATS } from '../data/initialData';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import { Card } from '../components/common/Card';
@@ -20,20 +21,30 @@ import {
 
 export function AddResourcePage() {
   const { subjects, addResource } = useResources();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     title: '',
     subjectId: subjects[0]?.id || '',
-    semester: '3',
+    semester: user?.semester ? String(user.semester) : '3',
     category: 'Notes',
     format: 'PDF',
     size: '4.5 MB',
-    author: '',
+    author: user ? `${user.name} (${user.role === 'Faculty' ? 'Faculty' : `ECE Sem ${user.semester || 4}`})` : '',
     url: '',
     description: '',
     tagsInput: '',
   });
+
+  useEffect(() => {
+    if (user && !formData.author) {
+      setFormData((prev) => ({
+        ...prev,
+        author: `${user.name} (${user.role === 'Faculty' ? 'Faculty' : `ECE Sem ${user.semester || 4}`})`,
+      }));
+    }
+  }, [user]);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);

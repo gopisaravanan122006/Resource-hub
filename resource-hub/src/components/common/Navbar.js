@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useResources } from '../../context/ResourceContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { Button } from './Button';
 import {
   Cpu,
@@ -16,13 +17,21 @@ import {
   X,
   ExternalLink,
   Wrench,
-  Search
+  Search,
+  LogIn,
+  LogOut,
+  User,
+  GraduationCap,
+  ChevronDown
 } from 'lucide-react';
 
 export function Navbar({ onOpenAddModal }) {
-  const { bookmarks } = useResources();
+  const { bookmarks, showToast } = useResources();
   const { theme, toggleTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
+  
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [quickSearch, setQuickSearch] = useState('');
   const navigate = useNavigate();
 
@@ -33,6 +42,12 @@ export function Navbar({ onOpenAddModal }) {
       setQuickSearch('');
       setMobileMenuOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setUserDropdownOpen(false);
+    showToast('Logged out of department portal', 'info');
   };
 
   const navLinks = [
@@ -112,8 +127,9 @@ export function Navbar({ onOpenAddModal }) {
             ))}
           </nav>
 
-          {/* Actions: Theme Toggle & Add Resource */}
+          {/* Actions: Theme Toggle, User Profile/Login & Add Resource */}
           <div className="flex items-center gap-2">
+            {/* Theme toggle */}
             <button
               onClick={toggleTheme}
               className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -126,6 +142,7 @@ export function Navbar({ onOpenAddModal }) {
               )}
             </button>
 
+            {/* Add Resource Button */}
             <Button
               variant="primary"
               size="sm"
@@ -135,6 +152,87 @@ export function Navbar({ onOpenAddModal }) {
             >
               Add Resource
             </Button>
+
+            {/* User Auth Profile / Login Dropdown */}
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center gap-2 p-1 sm:px-2 sm:py-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                    {user.avatar || 'EC'}
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate max-w-[90px] leading-tight">
+                      {user.name.split(' ')[0]}
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block leading-none">
+                      {user.role === 'Faculty' ? 'Faculty' : `Sem ${user.semester || 4}`}
+                    </span>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+                </button>
+
+                {/* Dropdown Menu */}
+                {userDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setUserDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 py-2 z-50 animate-slide-up text-xs">
+                      <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+                        <p className="font-bold text-slate-900 dark:text-white truncate">
+                          {user.name}
+                        </p>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          {user.email}
+                        </p>
+                        <span className="inline-block mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                          {user.role} · {user.rollNo}
+                        </span>
+                      </div>
+
+                      <div className="py-1">
+                        <Link
+                          to="/bookmarks"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        >
+                          <Bookmark className="w-3.5 h-3.5" />
+                          <span>Saved Bookmarks</span>
+                        </Link>
+                        <Link
+                          to="/add-resource"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        >
+                          <PlusCircle className="w-3.5 h-3.5" />
+                          <span>Contribute Resource</span>
+                        </Link>
+                      </div>
+
+                      <div className="pt-1 border-t border-slate-100 dark:border-slate-800">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-left font-medium"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <Link to="/login">
+                <Button variant="outline" size="sm" icon={LogIn}>
+                  Sign In
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile menu button */}
             <button
@@ -163,6 +261,42 @@ export function Navbar({ onOpenAddModal }) {
               />
             </div>
           </form>
+
+          {/* User state on mobile */}
+          {isAuthenticated && user ? (
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-brand-600 text-white font-bold text-xs flex items-center justify-center">
+                  {user.avatar || 'EC'}
+                </div>
+                <div>
+                  <span className="font-bold text-xs text-slate-800 dark:text-slate-200 block">
+                    {user.name}
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    {user.role} · {user.rollNo}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block mb-2"
+            >
+              <Button variant="outline" size="md" icon={LogIn} className="w-full justify-center">
+                Sign In to Portal
+              </Button>
+            </Link>
+          )}
 
           {navLinks.map((link) => (
             <NavLink
