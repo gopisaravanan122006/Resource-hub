@@ -1,0 +1,174 @@
+/* App.css - Custom Component Styling & Circuit Theme Enhancements */
+
+/* ==========================================================================
+   1. Theme Variables & Circuit Theme Variables
+   ========================================================================== */
+:root {
+  --primary-glow: rgba(37, 99, 235, 0.25);
+  --accent-cyan: #06b6d4;
+  --circuit-line: rgba(59, 130, 246, 0.15);
+  --card-radius: 1rem;
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  --primary-glow: rgba(56, 189, 248, 0.2);
+  --circuit-line: rgba(59, 130, 246, 0.2);
+}
+
+/* ==========================================================================
+   2. Custom Backgrounds & PCB Circuit Patterns
+   ========================================================================== */
+.pcb-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, var(--circuit-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--circuit-line) 1px, transparent 1px);
+}
+
+.circuit-node {
+  position: relative;
+}
+.circuit-node::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+/* ==========================================================================
+   3. Card Glow & Hover Effects
+   ========================================================================== */
+.card-hover-effect {
+  transition: var(--transition-smooth);
+}
+.card-hover-effect:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -8px rgba(37, 99, 235, 0.15);
+}
+
+.glow-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+.glow-on-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transition: 0.5s;
+  pointer-events: none;
+}
+.glow-on-hover:hover::before {
+  left: 100%;
+}
+
+/* ==========================================================================
+   4. Resistor Visual Calculator Styles
+   ========================================================================== */
+.resistor-body {
+  border-radius: 20px;
+  background: linear-gradient(180deg, #fef08a 0%, #fde047 50%, #eab308 100%);
+  box-shadow: 
+    inset 0 4px 6px rgba(255, 255, 255, 0.6),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.2),
+    0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.dark .resistor-body {
+  background: linear-gradient(180deg, #ca8a04 0%, #a16207 50%, #713f12 100%);
+  box-shadow: 
+    inset 0 3px 5px rgba(255, 255, 255, 0.3),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.resistor-band {
+  box-shadow: 
+    inset 1px 0 2px rgba(255, 255, 255, 0.3),
+    inset -1px 0 2px rgba(0, 0, 0, 0.4);
+}
+
+.resistor-lead {
+  background: linear-gradient(180deg, #94a3b8 0%, #cbd5e1 50%, #64748b 100%);
+  height: 4px;
+}
+
+/* ==========================================================================
+   5. Custom Animations
+   ========================================================================== */
+@keyframes subtlePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+.animate-subtle-pulse {
+  animation: subtlePulse 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .skeleton-shimmer {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ==========================================================================
+   6. Custom Scrollbar Styling
+   ========================================================================== */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ==========================================================================
+   7. Print Media Queries (For printing study sheets / notes)
+   ========================================================================== */
+@media print {
+  header, footer, .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .card-print {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+}

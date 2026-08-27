@@ -1,0 +1,10 @@
+{
+  "name": "ece-department-resource-portal",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix resource-hub start",
+    "dev": "npm --prefix resource-hub start",
+    "build": "npm --prefix resource-hub run build"
+  }
+}
